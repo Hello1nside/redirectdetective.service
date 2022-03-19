@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+var DomainsCORS = "https://redirectinfo.com"
+
 type Redirect struct {
 	Url  string `json:"url"`
 	Code int    `json:"code"`
@@ -63,6 +65,9 @@ func responseWriter(w http.ResponseWriter, data string) {
 	if err != nil {
 		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
 	}
+
+	w.Header().Set("Access-Control-Allow-Origin", DomainsCORS)
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResp)
 	return
@@ -90,7 +95,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 
 	redirectsJson, _ := json.Marshal(response)
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", DomainsCORS)
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(redirectsJson)
