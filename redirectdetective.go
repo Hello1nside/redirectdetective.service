@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 var DomainsCORS = "https://redirectinfo.com"
@@ -81,9 +83,19 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, err := http.Get(site)
+	if !strings.Contains(site, "http://") && !strings.Contains(site, "https://") {
+		site = "http://" + site
+	}
+
+	_, err := url.ParseRequestURI(site)
 	if err != nil {
-		responseWriter(w, "no such host")
+		responseWriter(w, err.Error())
+		return
+	}
+
+	_, err = http.Get(site)
+	if err != nil {
+		responseWriter(w, "No such host")
 		return
 	}
 
