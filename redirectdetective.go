@@ -70,8 +70,8 @@ func getRedirects(response *Response, site string) {
 			if !strings.Contains(nextURL, domain) {
 				nextURL = "http://" + domain + nextURL
 			}
-			i += 1
 		}
+		i += 1
 	}
 }
 
@@ -110,7 +110,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 
 	_, err = http.Get(site)
 	if err != nil {
-		responseWriter(w, "No such host")
+		responseWriter(w, err.Error())
 		return
 	}
 
