@@ -26,6 +26,16 @@ func (response *Response) AddRedirect(item Redirect) []Redirect {
 	return response.Response
 }
 
+func getDomainFromURI(uri string) string {
+	u, err := url.Parse(uri)
+	if err != nil {
+		log.Fatal(err)
+	}
+	parts := strings.Split(u.Hostname(), ".")
+	domain := parts[len(parts)-2] + "." + parts[len(parts)-1]
+	return domain
+}
+
 func getRedirects(response *Response, site string) {
 
 	nextURL := site
@@ -36,7 +46,7 @@ func getRedirects(response *Response, site string) {
 			return http.ErrUseLastResponse
 		}}
 
-	for i < 100 {
+	for i < 10 {
 
 		resp, err := client.Get(nextURL)
 		if err != nil {
@@ -55,6 +65,11 @@ func getRedirects(response *Response, site string) {
 			break
 		} else {
 			nextURL = resp.Header.Get("Location")
+
+			domain := getDomainFromURI(site)
+			if !strings.Contains(nextURL, domain) {
+				nextURL = "http://" + domain + nextURL
+			}
 			i += 1
 		}
 	}
